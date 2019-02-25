@@ -1,27 +1,16 @@
 module Api
   class MapsController < ApplicationController
-    def index
-      render 'public/index.html'
-    end
 
+    # 逆ジオコーディングを行うAPI
     def reverse
+      result = GoogleMapService.reverse_geocoding(params[:latlng])
+      render json: { result: result }
     end
 
+    # 住所・スポットのキーワードから住所情報の検索を行うAPI
     def autocomplete
-    end
-
-    def direction
-    end
-
-    private
-    
-    def reverse_params
-    end
-
-    def autocomplete_params
-    end
-
-    def direction_params
+      GoogleMapService.reverse_geocoding(params[:input], params[:location])
+      render json: { result: results }
     end
   end
 end
