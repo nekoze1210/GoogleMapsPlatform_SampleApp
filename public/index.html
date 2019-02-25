@@ -9,6 +9,24 @@
       #map {
         height: 100%;
       }
+      #search-box {
+        width: 80%;
+        height: 40px;
+        font-size: 16px;
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+      }
+      #result-view {
+        width: 90%;
+        min-height: 80px;
+        font-size: 16px;
+        background: #fff;
+        margin-bottom: 20px;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+      }
       html,
       body {
         height: 100%;
@@ -18,6 +36,17 @@
     </style>
   </head>
   <body>
+    <input
+      id="search-box"
+      class="controls"
+      type="text"
+      placeholder="キーワード検索"
+    />
+    <div id="result-view">
+      <p>
+        マーカーを移動すると住所が表示されます。<br />検索バーを入力すると住所の候補が表示されます。
+      </p>
+    </div>
     <div id="map"></div>
     <script>
       function initMap() {
@@ -38,35 +67,60 @@
           draggable: true
         })
 
+        // 検索窓の設置
+        var searchBox = document.getElementById('search-box')
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchBox)
+
+        // 住所や検索結果を表示するテキストの設置
+        var resultView = document.getElementById('result-view')
+        map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(resultView)
+
         // イベントリスナーの登録
+        //// マーカーをドラッグアンドドロップで移動した時
         google.maps.event.addListener(marker, 'dragend', function() {
           lat = marker.getPosition().lat()
           lng = marker.getPosition().lng()
           latlng = lat + ',' + lng
-          console.log(latlng)
           axios
             .get('/api/maps/reverse', { params: { latlng: latlng } })
             .then(function(response) {
+              // 通信に成功した時
               console.log(response.data)
+              resultView.innerText = response.data.formatted_address
             })
             .catch(function() {
+              // 通信エラー発生時
               alert('Error')
             })
-          // document.getElementById('lat').value = marker
-          //   .getPosition()
-          //   .lat()
-          //   .toFixed(6)
-          // document.getElementById('lng').value = marker
-          //   .getPosition()
-          //   .lng()
-          //   .toFixed(6)
         })
 
-        google.maps.event.addDomListener(window, 'resize', function() {
-          //ブラウザがリサイズされたらマップのセンターを更新する
-          var center = map.getCenter()
-          google.maps.event.trigger(map, 'resize')
-          map.setCenter(center)
+        //// 検索窓にキーワードを入力した時
+        searchBox.addEventListener('change', function() {
+          // 現在地を取得
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var latlng =
+              position.coords.latitude + ',' + position.coords.longitude
+            var input = document.getElementById('search-box').value
+
+            axios
+              .get('/api/maps/autocomplete', {
+                params: { input: input, location: latlng }
+              })
+              .then(function(response) {
+                // 通信に成功した時
+                console.log(response.data)
+                document.getElementById('result-view').innerText = ''
+                for (var i = 0, len = response.data.length; i < len; ++i) {
+                  console.log(response.data[i].description)
+                  document.getElementById('result-view').innerHTML +=
+                    '<p>・' + response.data[i].description + '</p>'
+                }
+              })
+              .catch(function() {
+                // 通信エラー発生時
+                alert('Error')
+              })
+          })
         })
       }
     </script>
