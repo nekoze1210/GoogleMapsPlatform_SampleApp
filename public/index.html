@@ -95,7 +95,7 @@
         })
 
         //// 検索窓にキーワードを入力した時
-        searchBox.addEventListener('change', function() {
+        searchBox.addEventListener('keyup', function() {
           // 現在地を取得
           navigator.geolocation.getCurrentPosition(function(position) {
             var latlng =
@@ -109,9 +109,9 @@
               .then(function(response) {
                 // 通信に成功した時
                 console.log(response.data)
-                document.getElementById('result-view').innerText = ''
+                document.getElementById('result-view').innerHTML =
+                  '<b>検索結果</b>'
                 for (var i = 0, len = response.data.length; i < len; ++i) {
-                  console.log(response.data[i].description)
                   document.getElementById('result-view').innerHTML +=
                     '<p>・' + response.data[i].description + '</p>'
                 }
