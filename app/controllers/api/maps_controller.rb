@@ -1,5 +1,9 @@
 module Api
   class MapsController < ApplicationController
+    def index
+      render 'public/index.html'
+    end
+
     def reverse
     end
 
