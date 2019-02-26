@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>GoogleMap</title>
+    <title>GoogleMapsPlatform SampleApp</title>
     <style>
       #map {
         height: 100%;
@@ -71,9 +71,12 @@
         var searchBox = document.getElementById('search-box')
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchBox)
 
-        // 住所や検索結果を表示するテキストの設置
-        var resultView = document.getElementById('result-view')
-        map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(resultView)
+
+
+        // TODO: 住所や検索結果を表示するテキストの設置をここに書く
+
+
+
 
         // イベントリスナーの登録
         //// マーカーをドラッグアンドドロップで移動した時
@@ -84,9 +87,10 @@
           axios
             .get('/api/maps/reverse', { params: { latlng: latlng } })
             .then(function(response) {
-              // 通信に成功した時
-              console.log(response.data)
-              resultView.innerText = response.data.formatted_address
+                console.log(response.data)
+
+              // TODO: 通信に成功した時の処理をここに書く
+
             })
             .catch(function() {
               // 通信エラー発生時
@@ -107,14 +111,12 @@
                 params: { input: input, location: latlng }
               })
               .then(function(response) {
-                // 通信に成功した時
                 console.log(response.data)
-                document.getElementById('result-view').innerHTML =
-                  '<b>検索結果</b>'
-                for (var i = 0, len = response.data.length; i < len; ++i) {
-                  document.getElementById('result-view').innerHTML +=
-                    '<p>・' + response.data[i].description + '</p>'
-                }
+
+
+                // TODO: 通信に成功した時の処理をここに書く
+
+
               })
               .catch(function() {
                 // 通信エラー発生時
